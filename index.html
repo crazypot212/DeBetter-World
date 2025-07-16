@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神秘邀请函</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(101, 67, 33, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #2c1810 0%, #1a0f08 50%, #0f0906 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .envelope-container {
+            position: relative;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .envelope-container:hover {
+            transform: scale(1.02);
+        }
+
+        .envelope {
+            width: 450px;
+            height: 320px;
+            position: relative;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(160, 130, 90, 0.3) 0%, transparent 50%),
+                linear-gradient(145deg, #8b6f47 0%, #6d5530 50%, #5a4528 100%);
+            border-radius: 12px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.6),
+                inset 0 2px 4px rgba(255,255,255,0.1),
+                inset 0 -2px 4px rgba(0,0,0,0.3);
+            border: 3px solid #4a3520;
+            overflow: hidden;
+        }
+
+        .envelope::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.03) 2px,
+                    rgba(0,0,0,0.03) 4px
+                );
+            pointer-events: none;
+        }
+
+        .envelope-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(145deg, #9a7d4a 0%, #8b6f47 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            border-bottom: 2px solid #4a3520;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-origin: bottom center;
+            z-index: 5;
+        }
+
+        .envelope.opened .envelope-top {
+            transform: rotateX(-120deg) translateY(-10px);
+            opacity: 0.7;
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90px;
+            height: 90px;
+            background: 
+                radial-gradient(circle at 30% 30%, #cc1616 0%, #8b0000 40%, #660000 70%, #330000 100%);
+            border-radius: 50%;
+            border: 4px solid #4a0000;
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.8),
+                inset 0 2px 4px rgba(255,255,255,0.2),
+                inset 0 -2px 6px rgba(0,0,0,0.4);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .wax-seal:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 
+                0 12px 30px rgba(139, 0, 0, 0.6),
+                inset 0 2px 4px rgba(255,255,255,0.3),
+                inset 0 -2px 6px rgba(0,0,0,0.4);
+        }
+
+        .wax-seal::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: 
+                radial-gradient(circle, rgba(212, 175, 55, 0.9) 0%, rgba(184, 134, 11, 0.8) 100%);
+            border-radius: 50%;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .wax-seal::after {
+            content: "K";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Cinzel', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #8b0000;
+            text-shadow: 
+                0 1px 2px rgba(0,0,0,0.8),
+                0 0 10px rgba(212, 175, 55, 0.5);
+            z-index: 1;
+        }
+
+        .envelope.opened .wax-seal {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0) rotate(180deg);
+        }
+
+        .click-instruction {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #d4af37;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            animation: mysticalPulse 3s infinite;
+        }
+
+        .envelope.opened .click-instruction {
+            opacity: 0;
+            transform: translateX(-50%) translateY(20px);
+        }
+
+        @keyframes mysticalPulse {
+            0%, 100% { 
+                opacity: 0.7;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            }
+            50% { 
+                opacity: 1;
+                text-shadow: 
+                    0 2px 4px rgba(0,0,0,0.5),
+                    0 0 15px rgba(212, 175, 55, 0.6);
+            }
+        }
+
+        .letter-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .letter {
+            width: 100%;
+            background: 
+                radial-gradient(circle at 15% 25%, rgba(160, 130, 90, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 75%, rgba(139, 111, 63, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(101, 67, 33, 0.05) 0%, transparent 60%),
+                linear-gradient(135deg, #f5e6d3 0%, #e8d5b7 50%, #d4c4a8 100%);
+            padding: 50px 45px;
+            border-radius: 15px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.5),
+                inset 0 2px 4px rgba(255,255,255,0.3),
+                inset 0 -2px 4px rgba(0,0,0,0.1);
+            border: 3px solid #c4a875;
+            position: relative;
+            opacity: 0;
+            transform: translateY(80px) rotateX(15deg);
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .letter.show {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+        }
+
+        .letter::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 28px,
+                    rgba(101, 67, 33, 0.08) 29px,
+                    rgba(101, 67, 33, 0.08) 30px
+                );
+            pointer-events: none;
+            border-radius: 12px;
+        }
+
+        .letter-content {
+            position: relative;
+            z-index: 2;
+            color: #3a2817;
+            line-height: 1.8;
+        }
+
+        .ornamental-border {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 2px solid #c4a875;
+            border-radius: 10px;
+            background: 
+                linear-gradient(45deg, transparent 0%, rgba(196, 168, 117, 0.1) 50%, transparent 100%);
+        }
+
+        .ornamental-border::before {
+            content: "";
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 16px;
+            background: 
+                linear-gradient(45deg, #c4a875 0%, #d4af37 50%, #c4a875 100%);
+            border-radius: 8px;
+        }
+
+        .letter-title {
+            font-family: 'Cinzel', serif;
+            font-size: 40px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #8b0000;
+            text-shadow: 
+                0 3px 6px rgba(0,0,0,0.2),
+                0 0 20px rgba(139, 0, 0, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .recipient {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #5a4228;
+            text-align: center;
+            padding: 10px;
+            background: rgba(90, 66, 40, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(90, 66, 40, 0.3);
+        }
+
+        .subject {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #8b0000;
+            text-align: center;
+            padding: 20px;
+            background: 
+                radial-gradient(ellipse at center, rgba(139, 0, 0, 0.15) 0%, rgba(139, 0, 0, 0.05) 100%);
+            border-radius: 10px;
+            border: 2px solid rgba(139, 0, 0, 0.3);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            color: #4a3520;
+        }
+
+        .content-paragraph {
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: justify;
+            text-indent: 2em;
+            color: #3a2817;
+        }
+
+        .mystical-questions {
+            margin: 30px 0;
+            padding: 25px;
+            background: 
+                radial-gradient(circle at center, rgba(109, 85, 48, 0.2) 0%, rgba(109, 85, 48, 0.1) 100%);
+            border-radius: 10px;
+            border: 2px solid #6d5530;
+            position: relative;
+        }
+
+        .mystical-questions::before {
+            content: "❝";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 40px;
+            color: #6d5530;
+            background: #f5e6d3;
+            padding: 0 10px;
+        }
+
+        .question {
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-style: italic;
+            color: #6d5530;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .event-details {
+            background: 
+                radial-gradient(circle at center, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.1) 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 3px solid #d4af37;
+            position: relative;
+        }
+
+        .event-details::before {
+            content: "◆";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+            color: #d4af37;
+            background: #f5e6d3;
+            padding: 0 15px;
+        }
+
+        .event-details h3 {
+            color: #8b0000;
+            margin-bottom: 20px;
+            font-family: 'Cinzel', serif;
+            font-size: 22px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .detail-item {
+            margin: 15px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .detail-label {
+            font-weight: 700;
+            color: #5a4228;
+            min-width: 120px;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            color: #3a2817;
+            font-weight: 500;
+        }
+
+        .warning-notes {
+            margin: 30px 0;
+            padding: 25px;
+            background: 
+                radial-gradient(circle at center, rgba(139, 0, 0, 0.1) 0%, rgba(139, 0, 0, 0.05) 100%);
+            border-radius: 10px;
+            border: 2px solid #8b0000;
+            position: relative;
+        }
+
+        .warning-notes::before {
+            content: "⚠";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            font-size: 24px;
+            color: #8b0000;
+            background: #f5e6d3;
+            padding: 0 10px;
+        }
+
+        .warning-notes strong {
+            color: #8b0000;
+            font-size: 18px;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .warning-notes ol {
+            margin-left: 25px;
+            color: #5a4228;
+        }
+
+        .warning-notes li {
+            margin: 10px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .closing-statement {
+            margin: 30px 0;
+            font-size: 18px;
+            text-align: center;
+            color: #8b0000;
+            font-weight: 600;
+            font-style: italic;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 40px;
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #8b0000;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .signature::before {
+            content: "～";
+            position: absolute;
+            left: -30px;
+            top: 0;
+            color: #d4af37;
+            font-size: 30px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .envelope {
+                width: 350px;
+                height: 250px;
+            }
+            
+            .wax-seal {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .wax-seal::after {
+                font-size: 24px;
+            }
+            
+            .letter {
+                padding: 35px 30px;
+            }
+            
+            .letter-title {
+                font-size: 28px;
+            }
+            
+            .subject {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .envelope {
+                width: 280px;
+                height: 200px;
+            }
+            
+            .wax-seal {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .wax-seal::after {
+                font-size: 20px;
+            }
+            
+            .letter {
+                padding: 25px 20px;
+            }
+            
+            .letter-title {
+                font-size: 24px;
+            }
+            
+            .click-instruction {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="envelope-container" id="envelopeContainer">
+            <div class="envelope" id="envelope">
+                <div class="envelope-top"></div>
+                <div class="wax-seal" id="waxSeal"></div>
+                <div class="click-instruction">点击火漆印章开启神秘邀请</div>
+            </div>
+        </div>
+
+        <div class="letter-container">
+            <div class="letter" id="letter">
+                <div class="ornamental-border"></div>
+                <div class="letter-content">
+                    <h1 class="letter-title">邀请函</h1>
+                    
+                    <div class="recipient">收件人：DB市的你们</div>
+                    
+                    <div class="subject">诚邀阁下莅临「DeBetterWorld」特别盛宴</div>
+                    
+                    <div class="greeting">尊敬的贵宾：</div>
+                    
+                    <div class="content-paragraph">
+                        您作为小镇的一份子，想必早已听闻这座小镇的诸多传闻。而如今，一个不容错过的机会正等待您的到来。
+                    </div>
+                    
+                    <div class="content-paragraph">
+                        「DeBetterWorld」将于<strong>2025年7月27日</strong>举办一场仅限少数贵宾参与的私人聚会。此次聚会非同寻常——它不仅关乎您的家族，更与这五年来小镇上那些讳莫如深的秘密息息相关。
+                    </div>
+                    
+                    <div class="mystical-questions">
+                        <div class="question">您是否好奇，为何每五年总有一些人无声无息地消失？</div>
+                        <div class="question">您是否想过，自己的家族在其中扮演了怎样的角色？</div>
+                    </div>
+                    
+                    <div class="content-paragraph">
+                        我们期待您的智慧与勇气，一同揭开被尘封的真相。
+                    </div>
+                    
+                    <div class="event-details">
+                        <h3>聚会详情</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">时间：</span>
+                            <span class="detail-value">早上8点30分 至 中午12点30分</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">地点：</span>
+                            <span class="detail-value">67, Lorong 22/SS1, 14120 Simpang Ampat, Penang.</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">着装要求：</span>
+                            <span class="detail-value">正装，并请佩戴一件能代表您家族的饰物</span>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-notes">
+                        <strong>请注意：</strong>
+                        <ol>
+                            <li>此邀请函仅限本人使用，不可转让。</li>
+                            <li>庄园位置隐秘，届时将有专人引导。</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="closing-statement">
+                        期待与您共赴这场……真相与谎言的盛宴。
+                    </div>
+                    
+                    <div class="signature">
+                        神秘人 K
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const envelopeContainer = document.getElementById('envelopeContainer');
+            const envelope = document.getElementById('envelope');
+            const waxSeal = document.getElementById('waxSeal');
+            const letter = document.getElementById('letter');
+            
+            let isOpened = false;
+
+            function openInvitation() {
+                if (isOpened) return;
+                
+                isOpened = true;
+                
+                // 打开信封动画
+                envelope.classList.add('opened');
+                
+                // 显示信件
+                setTimeout(() => {
+                    letter.classList.add('show');
+                }, 1000);
+                
+                // 添加一些神秘的音效感觉（通过控制台）
+                console.log('🔮 神秘的邀请函已开启...');
+            }
+
+            // 点击事件
+            envelopeContainer.addEventListener('click', openInvitation);
+            
+            // 键盘事件
+            document.addEventListener('keydown', function(e) {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    openInvitation();
+                }
+            });
+            
+            // 触摸事件
+            envelopeContainer.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                openInvitation();
+            });
+        });
+    </script>
+</body>
+</html>
